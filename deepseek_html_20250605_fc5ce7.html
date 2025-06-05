@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saponification Value of Oil - Interactive Virtual Lab</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #2c3e50);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #ffcc00;
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .lab-area {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(40, 50, 70, 0.7);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .lab-title {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ffcc00;
+            font-size: 1.8rem;
+        }
+        
+        .lab-bench {
+            background: #3e4a5f;
+            height: 450px;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #5d6d88;
+        }
+        
+        .controls {
+            flex: 0 0 300px;
+            background: rgba(40, 50, 70, 0.7);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .control-title {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ffcc00;
+            font-size: 1.5rem;
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #5d6d88;
+            z-index: 1;
+        }
+        
+        .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #5d6d88;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            position: relative;
+            z-index: 2;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .step.active {
+            background: #ffcc00;
+            color: #1a2a6c;
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+        }
+        
+        .step.completed {
+            background: #4CAF50;
+        }
+        
+        .step-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            min-height: 150px;
+        }
+        
+        .step-title {
+            color: #ffcc00;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .step-description {
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+        
+        .controls-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(45deg, #ffcc00, #ff9900);
+            color: #1a2a6c;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn:disabled {
+            background: #5d6d88;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .formula-section {
+            background: rgba(40, 50, 70, 0.7);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            margin-top: 25px;
+        }
+        
+        .formula-title {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ffcc00;
+            font-size: 1.8rem;
+        }
+        
+        .formula-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .formula {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #ffcc00;
+        }
+        
+        .formula-explanation {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .calculation-results {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        
+        .input-group {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            min-width: 200px;
+        }
+        
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ffcc00;
+        }
+        
+        input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+        }
+        
+        .result {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .result-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ffcc00;
+            margin: 10px 0;
+        }
+        
+        /* Lab Equipment */
+        .equipment {
+            position: absolute;
+            transition: all 0.5s ease;
+            cursor: grab;
+            user-select: none;
+            z-index: 10;
+        }
+        
+        .equipment:active {
+            cursor: grabbing;
+        }
+        
+        .balance {
+            width: 120px;
+            height: 180px;
+            background: #8c8c8c;
+            border-radius: 10px;
+            bottom: 80px;
+            left: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+            cursor: default;
+        }
+        
+        .balance-pan {
+            width: 80px;
+            height: 80px;
+            background: #a6a6a6;
+            border-radius: 50%;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        .oil-bottle {
+            width: 60px;
+            height: 100px;
+            background: #4d4dff;
+            border-radius: 10px 10px 0 0;
+            bottom: 80px;
+            right: 100px;
+            position: relative;
+        }
+        
+        .koh-bottle {
+            width: 60px;
+            height: 100px;
+            background: #4dff4d;
+            border-radius: 10px 10px 0 0;
+            bottom: 80px;
+            right: 180px;
+            position: relative;
+        }
+        
+        .bottle-neck {
+            width: 20px;
+            height: 30px;
+            background: inherit;
+            position: absolute;
+            top: -30px;
+            left: 20px;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .flask {
+            width: 80px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 20px 20px 60px 60px;
+            bottom: 80px;
+            left: 200px;
+            border: 3px solid #d9d9d9;
+            cursor: default;
+        }
+        
+        .liquid {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            border-radius: 0 0 60px 60px;
+            transition: height 2s ease;
+        }
+        
+        .oil {
+            background: #ffcc00;
+            height: 30%;
+        }
+        
+        .koh {
+            background: #c2f0c2;
+            height: 0;
+        }
+        
+        .burette {
+            width: 30px;
+            height: 250px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            position: absolute;
+            top: 50px;
+            right: 150px;
+            display: none;
+        }
+        
+        .burette-tip {
+            width: 10px;
+            height: 20px;
+            background: #ccc;
+            position: absolute;
+            bottom: -20px;
+            left: 10px;
+        }
+        
+        .burette-liquid {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: #ff6666;
+            border-radius: 0 0 3px 3px;
+            transition: height 1s ease;
+        }
+        
+        .heater {
+            width: 100px;
+            height: 30px;
+            background: #333;
+            border-radius: 5px;
+            bottom: 70px;
+            left: 320px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ff9900;
+            display: none;
+            cursor: default;
+        }
+        
+        .condenser {
+            width: 20px;
+            height: 120px;
+            background: #b3d1ff;
+            border-radius: 10px;
+            top: 100px;
+            left: 350px;
+            display: none;
+            cursor: default;
+        }
+        
+        .indicator {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #ff00ff;
+            border-radius: 50%;
+            opacity: 0.3;
+            bottom: 150px;
+            left: 200px;
+            display: none;
+            cursor: default;
+        }
+        
+        .active-liquid {
+            animation: bubble 1s infinite;
+        }
+        
+        @keyframes bubble {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+        
+        .titration-setup {
+            display: none;
+        }
+        
+        .conical-flask {
+            width: 80px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 10px 10px 40px 40px;
+            bottom: 80px;
+            left: 400px;
+            border: 3px solid #d9d9d9;
+            position: absolute;
+            display: none;
+            cursor: default;
+        }
+        
+        .flask-liquid {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            border-radius: 0 0 40px 40px;
+        }
+        
+        .pink-liquid {
+            background: #ff99cc;
+            height: 40%;
+        }
+        
+        .clear-liquid {
+            background: rgba(255, 255, 255, 0.7);
+            height: 60%;
+        }
+        
+        .burette-stand {
+            width: 10px;
+            height: 300px;
+            background: #8c8c8c;
+            position: absolute;
+            bottom: 80px;
+            right: 160px;
+            display: none;
+            cursor: default;
+        }
+        
+        .burette-clamp {
+            width: 50px;
+            height: 10px;
+            background: #8c8c8c;
+            position: absolute;
+            top: 60px;
+            right: 140px;
+            display: none;
+            cursor: default;
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 20px;
+            background: #5d6d88;
+            border-radius: 10px;
+            margin: 15px 0;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ffcc00, #ff9900);
+            width: 0%;
+            transition: width 1s linear;
+        }
+        
+        .drop-target {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 0.7);
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .instruction-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 250px;
+            z-index: 100;
+        }
+        
+        .instruction-title {
+            color: #ffcc00;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .instruction-content {
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .feedback-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: #ffcc00;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .show-feedback {
+            opacity: 1;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .controls {
+                flex: 1;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .instruction-panel {
+                position: relative;
+                top: 0;
+                right: 0;
+                max-width: 100%;
+                margin-top: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Determination of Saponification Value of Oil</h1>
+            <p class="subtitle">Interactive Virtual Lab Simulation - Drag and drop equipment to perform the experiment!</p>
+        </header>
+        
+        <div class="instruction-panel">
+            <h3 class="instruction-title">How to Use the Lab</h3>
+            <p class="instruction-content">• Drag equipment to use them in the experiment<br>
+            • Drop bottles onto the flask to add chemicals<br>
+            • Drag the burette over the flask for titration<br>
+            • Follow the step-by-step instructions</p>
+        </div>
+        
+        <div class="feedback-message" id="feedback">Transfer complete!</div>
+        
+        <div class="main-content">
+            <div class="lab-area">
+                <h2 class="lab-title">Virtual Laboratory</h2>
+                <div class="lab-bench">
+                    <!-- Lab equipment will be positioned here -->
+                    <div class="equipment balance">
+                        <div class="balance-pan">0.00 g</div>
+                    </div>
+                    
+                    <div class="equipment oil-bottle" id="oil-bottle">
+                        <div class="bottle-neck"></div>
+                        <div style="position: absolute; bottom: 10px; text-align: center; width: 100%; color: white; font-weight: bold;">Oil</div>
+                    </div>
+                    
+                    <div class="equipment koh-bottle" id="koh-bottle">
+                        <div class="bottle-neck"></div>
+                        <div style="position: absolute; bottom: 10px; text-align: center; width: 100%; color: white; font-weight: bold;">KOH</div>
+                    </div>
+                    
+                    <div class="equipment flask" id="flask">
+                        <div class="liquid oil"></div>
+                        <div class="liquid koh"></div>
+                    </div>
+                    
+                    <div class="equipment burette" id="burette">
+                        <div class="burette-liquid" style="height: 80%;"></div>
+                        <div class="burette-tip"></div>
+                    </div>
+                    
+                    <div class="equipment heater">Heater</div>
+                    
+                    <div class="equipment condenser"></div>
+                    
+                    <div class="equipment indicator"></div>
+                    
+                    <div class="burette-stand"></div>
+                    <div class="burette-clamp"></div>
+                    
+                    <div class="equipment conical-flask titration-setup" id="conical-flask">
+                        <div class="flask-liquid clear-liquid"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <h2 class="control-title">Experiment Procedure</h2>
+                
+                <div class="step-indicator">
+                    <div class="step active" data-step="1">1</div>
+                    <div class="step" data-step="2">2</div>
+                    <div class="step" data-step="3">3</div>
+                    <div class="step" data-step="4">4</div>
+                    <div class="step" data-step="5">5</div>
+                </div>
+                
+                <div class="step-info">
+                    <h3 class="step-title">Weighing the Oil Sample</h3>
+                    <p class="step-description">Drag the oil bottle to the flask to transfer approximately 2g of oil. The exact weight will be recorded automatically.</p>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar"></div>
+                </div>
+                
+                <div class="controls-buttons">
+                    <button class="btn" id="prev-btn" disabled>Previous</button>
+                    <button class="btn" id="next-btn">Next Step</button>
+                    <button class="btn" id="reset-btn">Reset</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="formula-section">
+            <h2 class="formula-title">Calculation of Saponification Value</h2>
+            
+            <div class="formula-box">
+                <p class="formula-explanation">The saponification value is calculated using the following formula:</p>
+                <div class="formula">(B - S) × N × 56.1 / W</div>
+                <p class="formula-explanation">
+                    Where:<br>
+                    B = Volume of HCl used for blank titration (ml)<br>
+                    S = Volume of HCl used for sample titration (ml)<br>
+                    N = Normality of HCl<br>
+                    W = Weight of oil (g)<br>
+                    56.1 = Molecular weight of KOH
+                </p>
+            </div>
+            
+            <div class="calculation-results">
+                <div class="input-group">
+                    <label class="input-label">Weight of Oil (W):</label>
+                    <input type="number" id="weight" value="2.00" step="0.01" min="0" readonly>
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label">Blank Titration (B):</label>
+                    <input type="number" id="blank" value="0.00" step="0.1" min="0">
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label">Sample Titration (S):</label>
+                    <input type="number" id="sample" value="0.00" step="0.1" min="0">
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label">Normality of HCl (N):</label>
+                    <input type="number" id="normality" value="0.50" step="0.01" min="0">
+                </div>
+            </div>
+            
+            <div class="result">
+                <h3>Saponification Value:</h3>
+                <div class="result-value" id="result">0.00</div>
+                <p>Typical values: Coconut oil (250-260), Olive oil (190-200), Palm oil (200-205)</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const steps = document.querySelectorAll('.step');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const stepInfo = document.querySelector('.step-info');
+            const stepTitle = document.querySelector('.step-title');
+            const stepDescription = document.querySelector('.step-description');
+            const progressContainer = document.querySelector('.progress-container');
+            const progressBar = document.querySelector('.progress-bar');
+            const oilBottle = document.getElementById('oil-bottle');
+            const kohBottle = document.getElementById('koh-bottle');
+            const flask = document.getElementById('flask');
+            const burette = document.getElementById('burette');
+            const conicalFlask = document.getElementById('conical-flask');
+            const kohLiquid = document.querySelector('.koh');
+            const heater = document.querySelector('.heater');
+            const condenser = document.querySelector('.condenser');
+            const indicator = document.querySelector('.indicator');
+            const buretteStand = document.querySelector('.burette-stand');
+            const buretteClamp = document.querySelector('.burette-clamp');
+            const feedback = document.getElementById('feedback');
+            
+            // Calculation elements
+            const weightInput = document.getElementById('weight');
+            const blankInput = document.getElementById('blank');
+            const sampleInput = document.getElementById('sample');
+            const normalityInput = document.getElementById('normality');
+            const resultDisplay = document.getElementById('result');
+            
+            // Experiment state
+            let currentStep = 1;
+            let oilWeight = 2.00;
+            let isDragging = false;
+            let draggedElement = null;
+            let initialPos = {x: 0, y: 0};
+            
+            // Step titles and descriptions
+            const stepData = [
+                {
+                    title: "Weighing the Oil Sample",
+                    description: "Drag the oil bottle to the flask to transfer approximately 2g of oil. The exact weight will be recorded automatically."
+                },
+                {
+                    title: "Adding Alcoholic KOH Solution",
+                    description: "Drag the KOH bottle to the flask to add 25ml of alcoholic potassium hydroxide solution."
+                },
+                {
+                    title: "Refluxing the Mixture",
+                    description: "Set up the reflux apparatus and boil the mixture for 30 minutes to complete the saponification reaction."
+                },
+                {
+                    title: "Preparing Blank & Titration Setup",
+                    description: "Prepare a blank solution and set up the titration apparatus with HCl in the burette."
+                },
+                {
+                    title: "Titration & Calculation",
+                    description: "Drag the burette over the conical flask to titrate. Enter the titration values to calculate the saponification value."
+                }
+            ];
+            
+            // Initialize the experiment
+            updateStep();
+            setupDragAndDrop();
+            
+            // Event Listeners
+            nextBtn.addEventListener('click', goToNextStep);
+            prevBtn.addEventListener('click', goToPrevStep);
+            resetBtn.addEventListener('click', resetExperiment);
+            
+            // Input listeners for calculation
+            blankInput.addEventListener('input', calculateResult);
+            sampleInput.addEventListener('input', calculateResult);
+            normalityInput.addEventListener('input', calculateResult);
+            
+            // Step navigation
+            steps.forEach(step => {
+                step.addEventListener('click', function() {
+                    const stepNum = parseInt(this.getAttribute('data-step'));
+                    if (stepNum <= currentStep) {
+                        currentStep = stepNum;
+                        updateStep();
+                    }
+                });
+            });
+            
+            // Functions
+            function updateStep() {
+                // Update step indicators
+                steps.forEach((step, index) => {
+                    const stepNum = index + 1;
+                    step.classList.toggle('active', stepNum === currentStep);
+                    step.classList.toggle('completed', stepNum < currentStep);
+                });
+                
+                // Update step info
+                stepTitle.textContent = stepData[currentStep-1].title;
+                stepDescription.textContent = stepData[currentStep-1].description;
+                
+                // Update button states
+                prevBtn.disabled = currentStep === 1;
+                
+                // Show/hide progress bar
+                progressContainer.style.display = currentStep === 3 ? 'block' : 'none';
+                
+                // Update lab setup based on step
+                updateLabSetup();
+            }
+            
+            function updateLabSetup() {
+                // Reset all to default
+                heater.style.display = 'none';
+                condenser.style.display = 'none';
+                burette.style.display = 'none';
+                indicator.style.display = 'none';
+                conicalFlask.style.display = 'none';
+                buretteStand.style.display = 'none';
+                buretteClamp.style.display = 'none';
+                
+                // Reset drop target highlighting
+                flask.classList.remove('drop-target');
+                conicalFlask.classList.remove('drop-target');
+                
+                // Show equipment based on current step
+                switch(currentStep) {
+                    case 1:
+                        kohBottle.style.display = 'block';
+                        break;
+                    case 2:
+                        kohBottle.style.display = 'block';
+                        kohLiquid.style.height = '0%';
+                        flask.classList.add('drop-target');
+                        break;
+                    case 3:
+                        kohLiquid.style.height = '70%';
+                        heater.style.display = 'flex';
+                        condenser.style.display = 'block';
+                        kohLiquid.classList.add('active-liquid');
+                        startReflux();
+                        break;
+                    case 4:
+                        kohLiquid.style.height = '70%';
+                        burette.style.display = 'block';
+                        indicator.style.display = 'block';
+                        break;
+                    case 5:
+                        kohLiquid.style.height = '70%';
+                        burette.style.display = 'block';
+                        indicator.style.display = 'block';
+                        conicalFlask.style.display = 'block';
+                        buretteStand.style.display = 'block';
+                        buretteClamp.style.display = 'block';
+                        conicalFlask.classList.add('drop-target');
+                        break;
+                }
+            }
+            
+            function setupDragAndDrop() {
+                // Make equipment draggable
+                const draggableElements = [oilBottle, kohBottle, burette];
+                
+                draggableElements.forEach(element => {
+                    element.addEventListener('mousedown', startDrag);
+                    element.addEventListener('touchstart', startDragTouch);
+                });
+                
+                document.addEventListener('mousemove', dragElement);
+                document.addEventListener('touchmove', dragElementTouch);
+                document.addEventListener('mouseup', stopDrag);
+                document.addEventListener('touchend', stopDrag);
+            }
+            
+            function startDrag(e) {
+                isDragging = true;
+                draggedElement = e.target;
+                initialPos = {
+                    x: e.clientX - draggedElement.offsetLeft,
+                    y: e.clientY - draggedElement.offsetTop
+                };
+                draggedElement.style.zIndex = '100';
+                e.preventDefault();
+            }
+            
+            function startDragTouch(e) {
+                isDragging = true;
+                draggedElement = e.target;
+                const touch = e.touches[0];
+                initialPos = {
+                    x: touch.clientX - draggedElement.offsetLeft,
+                    y: touch.clientY - draggedElement.offsetTop
+                };
+                draggedElement.style.zIndex = '100';
+                e.preventDefault();
+            }
+            
+            function dragElement(e) {
+                if (!isDragging) return;
+                
+                draggedElement.style.left = (e.clientX - initialPos.x) + 'px';
+                draggedElement.style.top = (e.clientY - initialPos.y) + 'px';
+            }
+            
+            function dragElementTouch(e) {
+                if (!isDragging) return;
+                
+                const touch = e.touches[0];
+                draggedElement.style.left = (touch.clientX - initialPos.x) + 'px';
+                draggedElement.style.top = (touch.clientY - initialPos.y) + 'px';
+            }
+            
+            function stopDrag() {
+                if (!isDragging) return;
+                
+                isDragging = false;
+                draggedElement.style.zIndex = '10';
+                
+                // Check if dropped on target
+                const flaskRect = flask.getBoundingClientRect();
+                const conicalRect = conicalFlask.getBoundingClientRect();
+                const elementRect = draggedElement.getBoundingClientRect();
+                
+                // Check if dropped on flask
+                if (isColliding(elementRect, flaskRect) && flask.classList.contains('drop-target')) {
+                    handleDropOnFlask();
+                }
+                
+                // Check if dropped on conical flask
+                if (isColliding(elementRect, conicalRect) && conicalFlask.classList.contains('drop-target')) {
+                    handleDropOnConicalFlask();
+                }
+            }
+            
+            function isColliding(rect1, rect2) {
+                return !(
+                    rect1.right < rect2.left ||
+                    rect1.left > rect2.right ||
+                    rect1.bottom < rect2.top ||
+                    rect1.top > rect2.bottom
+                );
+            }
+            
+            function handleDropOnFlask() {
+                if (currentStep === 1 && draggedElement === oilBottle) {
+                    // Generate a random weight between 1.95 and 2.05
+                    oilWeight = (Math.random() * 0.1 + 1.95).toFixed(2);
+                    weightInput.value = oilWeight;
+                    
+                    // Visual feedback
+                    showFeedback("Oil added to flask!");
+                    
+                    // Proceed to next step after a delay
+                    setTimeout(() => {
+                        goToNextStep();
+                    }, 1500);
+                }
+                else if (currentStep === 2 && draggedElement === kohBottle) {
+                    // Add KOH to flask
+                    kohLiquid.style.height = '70%';
+                    
+                    // Visual feedback
+                    showFeedback("KOH solution added!");
+                    
+                    // Proceed to next step after a delay
+                    setTimeout(() => {
+                        goToNextStep();
+                    }, 1500);
+                }
+                
+                // Reset position
+                resetEquipmentPosition(draggedElement);
+            }
+            
+            function handleDropOnConicalFlask() {
+                if (currentStep === 5 && draggedElement === burette) {
+                    // Simulate titration
+                    const buretteLiquid = document.querySelector('.burette-liquid');
+                    buretteLiquid.style.height = '20%';
+                    
+                    // Change flask color to indicate titration
+                    const flaskLiquid = document.querySelector('.flask-liquid');
+                    flaskLiquid.classList.remove('clear-liquid');
+                    flaskLiquid.classList.add('pink-liquid');
+                    
+                    // Visual feedback
+                    showFeedback("Titration complete!");
+                    
+                    // Set sample titration value
+                    sampleInput.value = (Math.random() * 5 + 15).toFixed(1);
+                    blankInput.value = (Math.random() * 5 + 25).toFixed(1);
+                    calculateResult();
+                }
+                
+                // Reset position
+                resetEquipmentPosition(draggedElement);
+            }
+            
+            function resetEquipmentPosition(element) {
+                switch(element.id) {
+                    case 'oil-bottle':
+                        element.style.left = '';
+                        element.style.top = '';
+                        element.style.right = '100px';
+                        element.style.bottom = '80px';
+                        break;
+                    case 'koh-bottle':
+                        element.style.left = '';
+                        element.style.top = '';
+                        element.style.right = '180px';
+                        element.style.bottom = '80px';
+                        break;
+                    case 'burette':
+                        element.style.left = '';
+                        element.style.top = '';
+                        element.style.right = '150px';
+                        element.style.top = '50px';
+                        break;
+                }
+            }
+            
+            function showFeedback(message) {
+                feedback.textContent = message;
+                feedback.classList.add('show-feedback');
+                
+                setTimeout(() => {
+                    feedback.classList.remove('show-feedback');
+                }, 2000);
+            }
+            
+            function startReflux() {
+                if (currentStep === 3) {
+                    progressBar.style.width = '0%';
+                    setTimeout(() => {
+                        progressBar.style.width = '100%';
+                    }, 100);
+                    
+                    // After "refluxing", move to next step
+                    setTimeout(() => {
+                        kohLiquid.classList.remove('active-liquid');
+                        goToNextStep();
+                    }, 5000); // 5 seconds for simulation
+                }
+            }
+            
+            function goToNextStep() {
+                if (currentStep < 5) {
+                    currentStep++;
+                    updateStep();
+                } else {
+                    // On the last step, change button text
+                    nextBtn.textContent = "Experiment Complete";
+                    nextBtn.disabled = true;
+                }
+            }
+            
+            function goToPrevStep() {
+                if (currentStep > 1) {
+                    currentStep--;
+                    updateStep();
+                    nextBtn.textContent = "Next Step";
+                    nextBtn.disabled = false;
+                }
+            }
+            
+            function resetExperiment() {
+                currentStep = 1;
+                oilWeight = 2.00;
+                weightInput.value = oilWeight;
+                blankInput.value = "0.00";
+                sampleInput.value = "0.00";
+                normalityInput.value = "0.50";
+                resultDisplay.textContent = "0.00";
+                kohLiquid.style.height = '0%';
+                kohLiquid.classList.remove('active-liquid');
+                progressBar.style.width = '0%';
+                
+                // Reset titration flask color
+                const flaskLiquid = document.querySelector('.flask-liquid');
+                flaskLiquid.classList.remove('pink-liquid');
+                flaskLiquid.classList.add('clear-liquid');
+                
+                // Reset burette liquid
+                const buretteLiquid = document.querySelector('.burette-liquid');
+                buretteLiquid.style.height = '80%';
+                
+                // Reset positions
+                resetEquipmentPosition(oilBottle);
+                resetEquipmentPosition(kohBottle);
+                resetEquipmentPosition(burette);
+                
+                updateStep();
+            }
+            
+            function calculateResult() {
+                const B = parseFloat(blankInput.value) || 0;
+                const S = parseFloat(sampleInput.value) || 0;
+                const N = parseFloat(normalityInput.value) || 0;
+                const W = parseFloat(weightInput.value) || 0;
+                
+                if (B > 0 && S > 0 && N > 0 && W > 0) {
+                    const saponificationValue = ((B - S) * N * 56.1 / W).toFixed(2);
+                    resultDisplay.textContent = saponificationValue;
+                } else {
+                    resultDisplay.textContent = "0.00";
+                }
+            }
+        });
+    </script>
+</body>
+</html>
